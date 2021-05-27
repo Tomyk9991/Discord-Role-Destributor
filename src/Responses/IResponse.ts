@@ -1,5 +1,6 @@
 import {Client} from "discord.js";
 
-export default interface IResponse {
-    response(client: Client): string;
+
+export default interface IResponse<T> {
+    response(client: Client): T;
 }

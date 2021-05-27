@@ -1,34 +1,37 @@
-import {Client, Message} from "discord.js";
+import {Client, Message, MessageEmbed} from "discord.js";
 import {inject, injectable} from "inversify";
 import {TYPES} from "./injection/Types";
-import ICommand from "./Commands/ICommand";
 import StartCommand from "./Commands/StartCommand";
-import IResponse from "./Responses/IResponse";
-import StartResponse from "./Responses/StartResponse";
+import ChangePrefixCommand from "./Commands/ChangePrefixCommand";
+import HelpCommand from "./Commands/HelpCommand";
+import Command from "./Commands/Command";
 
 @injectable()
 export class Bot {
     private readonly client: Client;
     private readonly token: string;
-    private commands: ICommand[];
-    private responses: IResponse[];
+    private commands: Command[];
 
-    constructor(
-            @inject(TYPES.Client) client: Client,
-            @inject(TYPES.Token) token: string
-    ) {
+    constructor(@inject(TYPES.Client) client: Client, @inject(TYPES.Token) token: string) {
         this.client = client;
         this.token = token;
-        this.commands = [new StartCommand() ];
-        this.responses = [new StartResponse() ]
+        this.commands = [new StartCommand(), new ChangePrefixCommand(), new HelpCommand() ];
     }
 
-    public listen(): Promise < string > {
-        this.client.on('message', (message: Message) => {
-            for (let i = 0; i < this.commands.length; i++) {
-                if (this.commands[i].matches(message.content)) {
-                    let value: string = this.responses[i].response(this.client);
-                    message.channel.send(value);
+    public listen(): Promise <string> {
+        this.client.on('message', async (message: Message) => {
+
+            for (let i = 0; i < this.commands.length; i++)
+            {
+                let command: Command = this.commands[i];
+                if (command.matches(message.content))
+                {
+                    if (command.hasChangesToDo()) {
+                        command.do(message.content);
+                    }
+
+                    let value: MessageEmbed = this.commands[i].respond(this.client);
+                    await message.channel.send(value);
                 }
             }
         });
