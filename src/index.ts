@@ -1,3 +1,5 @@
+import DiscordRoleManager from "./DiscordRoleManager";
+
 require('dotenv').config(); // Recommended way of loading dotenv
 
 import container from "./injection/inversify.config";

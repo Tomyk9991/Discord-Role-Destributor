@@ -21,6 +21,17 @@ export default abstract class Command {
         return value.substring(1, value.length);
     }
 
+    protected createStandardEmbedArray(title: string, lines: EmbedFieldData[]): MessageEmbed {
+        const embed: MessageEmbed = new MessageEmbed()
+                .setColor('#0099ff')
+                .setTitle(title)
+                .addFields(lines)
+                .setTimestamp()
+                .setFooter('Bei Problemen an Tomyk#1337 wenden', 'https://i.imgur.com/qxhUKkj.png');
+
+        return embed;
+    }
+
     protected createStandardEmbed(title: string, ... lines: EmbedFieldData[]): MessageEmbed {
         const embed: MessageEmbed = new MessageEmbed()
         .setColor('#0099ff')

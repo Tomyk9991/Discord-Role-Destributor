@@ -2,9 +2,9 @@ import {Client, Message, MessageEmbed} from "discord.js";
 import {inject, injectable} from "inversify";
 import {TYPES} from "./injection/Types";
 import StartCommand from "./Commands/StartCommand";
-import ChangePrefixCommand from "./Commands/ChangePrefixCommand";
 import HelpCommand from "./Commands/HelpCommand";
 import Command from "./Commands/Command";
+import AddRoleCommand from "./Commands/AddRoleCommand";
 
 @injectable()
 export class Bot {
@@ -12,10 +12,10 @@ export class Bot {
     private readonly token: string;
     private commands: Command[];
 
-    constructor(@inject(TYPES.Client) client: Client, @inject(TYPES.Token) token: string) {
+    constructor(@inject(TYPES.Client) client: Client, @inject(TYPES.Token) token: string, @inject(TYPES.DiscordRoleManager) discordRoleManager) {
         this.client = client;
         this.token = token;
-        this.commands = [new StartCommand(), new ChangePrefixCommand(), new HelpCommand() ];
+        this.commands = [new StartCommand(), new HelpCommand(), new AddRoleCommand(discordRoleManager)];
     }
 
     public listen(): Promise <string> {
