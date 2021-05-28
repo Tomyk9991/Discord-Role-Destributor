@@ -1,6 +1,6 @@
 import Command from "./Command";
 import {Constants} from "../Constants";
-import {Client, Message, MessageEmbed} from "discord.js";
+import {Client, EmbedFieldData, Message} from "discord.js";
 
 export default class ConfigureCommand extends Command {
 
@@ -16,8 +16,12 @@ export default class ConfigureCommand extends Command {
         let rustEmote: string = (client.emojis.valueOf().find(emote => emote.name === "rust")).toString();
 
 
-        await message.channel.send(this.createStandardEmbed("Wie konfiguriere ich einen Bot?",
-                {name: 'Beispiel:', value: "\`" + Constants.prefix + `addRole "Rust"\` ${rustEmote}`, inline: false}));
+        let objs: EmbedFieldData[] = [
+            {name: 'Beispiel:', value: "\`" + Constants.prefix + `addRole "Rust"\` ${rustEmote}`, inline: true},
+            {name: 'Beispiel:', value: "\`" + Constants.prefix + `removeRole "Rust"\``, inline: true}
+        ];
+
+        await message.channel.send(this.createStandardEmbedArray("Wie konfiguriere ich einen Bot?", objs));
     }
 
     public do(value: string): void {

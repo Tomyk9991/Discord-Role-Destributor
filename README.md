@@ -2,9 +2,16 @@
 
 ## Commands
 
-`!configure` 
+`!help`
 
-to get a standard response, how to configure the bot
+<img src="https://i.imgur.com/9UkpIMJ.png" width="500">
+
+`!configure`
+
+<img src="https://i.imgur.com/4aAIrtA.png" width="500">
+
+
 
 `!addRole "rolename" <:roleEmote:>`
-to add a role
+
+<img src="https://i.imgur.com/vJ4ee2j.png" width="500">

@@ -8,6 +8,7 @@ import AddRoleCommand from "./Commands/AddRoleCommand";
 import RoleCommand from "./Commands/RoleCommand";
 import StartCommand from "./Commands/StartCommand";
 import RemoveCommand from "./Commands/RemoveCommand";
+import UpdateRoleCommand from "./Commands/UpdateRoleCommand";
 
 @injectable()
 export class Bot {
@@ -24,7 +25,8 @@ export class Bot {
             new AddRoleCommand(discordRoleManager),
             new RemoveCommand(discordRoleManager),
             new RoleCommand(discordRoleManager),
-            new StartCommand(discordRoleManager)
+            new StartCommand(discordRoleManager),
+            new UpdateRoleCommand(discordRoleManager)
         ];
     }
 

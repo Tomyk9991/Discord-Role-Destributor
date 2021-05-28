@@ -1,4 +1,4 @@
-import {Client, EmbedFieldData, Message, MessageEmbed} from "discord.js";
+import {Client, EmbedFieldData, Message} from "discord.js";
 import Command from "./Command";
 import DiscordRole from "../DiscordRole";
 import DiscordRoleManager from "../DiscordRoleManager";

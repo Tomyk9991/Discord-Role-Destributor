@@ -1,4 +1,5 @@
 import DiscordRole from "./DiscordRole";
+import {Client, ClientVoiceManager, Guild, GuildManager, GuildMember, Message, Role, User} from "discord.js";
 
 export default class DiscordRoleManager {
     private roles: DiscordRole[];
@@ -18,12 +19,25 @@ export default class DiscordRoleManager {
         }
     }
 
+    public update(role: DiscordRole): boolean {
+        let found: boolean = false;
+
+        for (let i = 0; i < this.roles.length; i++) {
+            if (this.roles[i].name.toLowerCase() === role.name.toLowerCase()) {
+                this.roles[i] = role;
+                found = true;
+                this.save();
+                break;
+            }
+        }
+        return found;
+    }
+
     public add(role: DiscordRole): void {
         for (let i = 0; i < this.roles.length; i++) {
             if (this.roles[i].name.toLowerCase() === role.name.toLowerCase()) {
                 this.roles[i] = role;
                 this.save();
-                return;
             }
         }
 
@@ -80,5 +94,33 @@ export default class DiscordRoleManager {
 
     public get(i: number): DiscordRole {
         return i < 0 || i >= this.roles.length ? null : this.roles[i];
+    }
+
+    public static async addUserToDiscordRole(user: User, discordRole: DiscordRole, message: Message): Promise<void> {
+        let roleName: string = discordRole.name.substring(1, discordRole.name.length - 1);
+        let role: Role = message.guild.roles.cache.find(role => role.name.toLowerCase() === roleName.toLowerCase());
+
+        if (role) {
+            let member: GuildMember = message.guild.member(user);
+            await member.roles.add(role);
+        } else {
+            await message.channel.send("`Rolle wurde nicht gefunden. Wende dich an einen Administrator.`").then((msg: Message) => {
+                setTimeout(() => msg.delete(), 5000);
+            });
+        }
+    }
+
+    public static async removeUserFromDiscordRole(user: User, discordRole: DiscordRole, message: Message) {
+        let roleName: string = discordRole.name.substring(1, discordRole.name.length - 1);
+        let role: Role = message.guild.roles.cache.find(role => role.name.toLowerCase() === roleName.toLowerCase());
+
+        if (role) {
+            let member: GuildMember = message.guild.member(user);
+            await member.roles.remove(role);
+        } else {
+            await message.channel.send("`Rolle wurde nicht gefunden. Wende dich an einen Administrator.`").then((msg: Message) => {
+                setTimeout(() => msg.delete(), 5000);
+            }).catch(reason => {});
+        }
     }
 }
