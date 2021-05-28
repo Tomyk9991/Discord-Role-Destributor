@@ -8,16 +8,42 @@ export default class DiscordRoleManager {
         this.filePath = filePath;
         this.roles = [];
         this.load();
+
+        this.printRoles();
+    }
+
+    public printRoles(): void {
+        for (let i = 0; i < this.roles.length; i++) {
+            console.log("Role: " + this.roles[i].toString());
+        }
     }
 
     public add(role: DiscordRole): void {
+        for (let i = 0; i < this.roles.length; i++) {
+            if (this.roles[i].name.toLowerCase() === role.name.toLowerCase()) {
+                this.roles[i] = role;
+                this.save();
+                return;
+            }
+        }
+
         this.roles.push(role);
+        this.save();
     }
 
-    public remove(role: DiscordRole): void {
-        const index: number = this.roles.indexOf(role, 0);
+    public remove(roleName: string): void {
+        let index: number = -1;
+
+        for (let i = 0; i < this.roles.length; i++) {
+            if (this.roles[i].name === roleName) {
+                index = i;
+                break;
+            }
+        }
+
         if (index > -1) {
             this.roles.splice(index, 1);
+            this.save();
         }
     }
 
@@ -28,18 +54,21 @@ export default class DiscordRoleManager {
     }
 
     public load(): DiscordRole[] {
-        if (this.roles !== null) {
-            return this.roles;
-        } else {
-            const fs = require('fs');
+        const fs = require('fs');
 
-            if (fs.existsSync(this.filePath)) {
-                let rawData = fs.readFileSync(this.filePath);
-                let discordRoles: DiscordRole[] = JSON.parse(rawData);
 
-                this.roles = discordRoles;
-                return this.roles;
+        if (fs.existsSync(this.filePath)) {
+
+            let rawData = fs.readFileSync(this.filePath);
+            let parsedData: any[] = JSON.parse(rawData);
+
+            this.roles = [];
+
+            for (let i = 0; i < parsedData.length; i++) {
+                this.roles.push(new DiscordRole(parsedData[i]._name, parsedData[i]._emote));
             }
+
+            return this.roles;
         }
 
         return null;

@@ -1,4 +1,4 @@
-import {Client, EmbedFieldData, MessageEmbed} from "discord.js";
+import {Client, EmbedFieldData, Message, MessageEmbed} from "discord.js";
 import Command from "./Command";
 import DiscordRole from "../DiscordRole";
 import DiscordRoleManager from "../DiscordRoleManager";
@@ -15,15 +15,16 @@ export default class AddRoleCommand extends Command {
         return this.hasPrefix(value) && this.withoutPrefix(value).toLowerCase().startsWith(this.command);
     }
 
-    public respond(client: Client): MessageEmbed {
+    public async respond(client: Client, message: Message): Promise<void> {
         let objs: EmbedFieldData[] = [];
         for (let i = 0; i < this.discordRoleManager.roleLength(); i++)
         {
             let role: DiscordRole = this.discordRoleManager.get(i);
             let emote: string = (client.emojis.valueOf().find(emote => emote.name === role.emote)).toString();
-            objs.push({name: (i + 1).toString(), value: role.name + " mit dem Emote: " + emote, inline: false});
+
+            objs.push({name: (i + 1).toString(), value: "`" + role.name + " with emote:` " + emote, inline: false});
         }
-        return this.createStandardEmbedArray("Bisherige Rollen:", objs);
+        await message.channel.send(this.createStandardEmbedArray("Bisherige Rollen:", objs));
     }
 
     public hasChangesToDo(): boolean {

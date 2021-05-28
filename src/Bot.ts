@@ -1,10 +1,13 @@
-import {Client, Message, MessageEmbed} from "discord.js";
+import {Client, Message} from "discord.js";
 import {inject, injectable} from "inversify";
 import {TYPES} from "./injection/Types";
-import StartCommand from "./Commands/StartCommand";
+import ConfigureCommand from "./Commands/ConfigureCommand";
 import HelpCommand from "./Commands/HelpCommand";
 import Command from "./Commands/Command";
 import AddRoleCommand from "./Commands/AddRoleCommand";
+import RoleCommand from "./Commands/RoleCommand";
+import StartCommand from "./Commands/StartCommand";
+import RemoveCommand from "./Commands/RemoveCommand";
 
 @injectable()
 export class Bot {
@@ -15,7 +18,14 @@ export class Bot {
     constructor(@inject(TYPES.Client) client: Client, @inject(TYPES.Token) token: string, @inject(TYPES.DiscordRoleManager) discordRoleManager) {
         this.client = client;
         this.token = token;
-        this.commands = [new StartCommand(), new HelpCommand(), new AddRoleCommand(discordRoleManager)];
+        this.commands = [
+            new ConfigureCommand(),
+            new HelpCommand(),
+            new AddRoleCommand(discordRoleManager),
+            new RemoveCommand(discordRoleManager),
+            new RoleCommand(discordRoleManager),
+            new StartCommand(discordRoleManager)
+        ];
     }
 
     public listen(): Promise <string> {
@@ -30,8 +40,7 @@ export class Bot {
                         command.do(message.content);
                     }
 
-                    let value: MessageEmbed = this.commands[i].respond(this.client);
-                    await message.channel.send(value);
+                    await this.commands[i].respond(this.client, message);
                 }
             }
         });

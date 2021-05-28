@@ -1,5 +1,5 @@
 import {Constants} from "../Constants";
-import {Client, EmbedFieldData, MessageEmbed} from "discord.js";
+import {Client, EmbedFieldData, Message, MessageEmbed} from "discord.js";
 
 export default abstract class Command {
     protected command: string;
@@ -9,7 +9,8 @@ export default abstract class Command {
     }
 
     abstract matches(value: string) : boolean;
-    abstract respond(client: Client) : MessageEmbed;
+    abstract respond(client: Client, message: Message) : Promise<void>;
+
     abstract hasChangesToDo(): boolean;
     abstract do(value: string): void;
 

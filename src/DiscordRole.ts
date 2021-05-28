@@ -25,4 +25,8 @@ export default class DiscordRole
     set emote(value: string) {
         this._emote = value;
     }
+
+    public toString(): string {
+        return this.name + " with emote: " + this.emote;
+    }
 }
