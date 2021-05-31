@@ -44,3 +44,7 @@ A json string list containing all user id's, the bot will listen to.
     "987654332198765"
 ]
 ```
+
+After adding those files, you can start the bot locally by using `node`
+
+`node src/index.js`
