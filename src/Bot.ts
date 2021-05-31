@@ -31,8 +31,8 @@ export class Bot {
     }
 
     public listen(): Promise <string> {
-        this.client.on('message', async (message: Message) => {
 
+        this.client.on('message', async (message: Message) => {
             for (let i = 0; i < this.commands.length; i++)
             {
                 let command: Command = this.commands[i];

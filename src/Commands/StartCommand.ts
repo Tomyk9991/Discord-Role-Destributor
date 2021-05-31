@@ -35,8 +35,7 @@ export default class StartCommand extends Command {
 
     public async respond(client: Client, message: Message): Promise<void> {
         let objs: EmbedFieldData[] = [];
-        for (let i = 0; i < this.discordRoleManager.roleLength(); i++)
-        {
+        for (let i = 0; i < this.discordRoleManager.roleLength(); i++) {
             let role: DiscordRole = this.discordRoleManager.get(i);
             let emote: string = (client.emojis.valueOf().find(emote => emote.name === role.emote)).toString();
 
@@ -49,7 +48,7 @@ export default class StartCommand extends Command {
         let channel: Channel = client.channels.cache.get(this.channelID);
 
         if (channel.isText()) {
-            let sentMessage: Message = await (<TextChannel> channel).send(embed);
+            let sentMessage: Message = await (<TextChannel>channel).send(embed);
 
             let sentReactions: MessageReaction[] = await this.addReactionsToMessage(sentMessage, client);
 

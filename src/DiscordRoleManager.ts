@@ -1,5 +1,5 @@
 import DiscordRole from "./DiscordRole";
-import {Client, ClientVoiceManager, Guild, GuildManager, GuildMember, Message, Role, User} from "discord.js";
+import {GuildMember, Message, Role, User} from "discord.js";
 
 export default class DiscordRoleManager {
     private roles: DiscordRole[];
