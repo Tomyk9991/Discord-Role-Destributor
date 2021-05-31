@@ -1,4 +1,14 @@
-import {Channel, Client, Message, MessageReaction, ReactionCollector, TextChannel, User} from "discord.js";
+import {
+    BaseClient,
+    Channel,
+    Client,
+    GuildMember,
+    Message,
+    MessageReaction,
+    ReactionCollector,
+    TextChannel,
+    User
+} from "discord.js";
 import {inject, injectable} from "inversify";
 import {TYPES} from "./injection/Types";
 import ConfigureCommand from "./Commands/ConfigureCommand";
@@ -12,6 +22,8 @@ import UpdateRoleCommand from "./Commands/UpdateRoleCommand";
 import DiscordRoleManager from "./DiscordRoleManager";
 import {IIOMessage} from "./IIOMessage";
 import DiscordRole from "./DiscordRole";
+import StartCommandListener from "./Commands/CommandListeners/StartCommandListener";
+import ColorConsole, {Color, ColorString} from "./Commands/Utilities/ColorConsole";
 
 @injectable()
 export class Bot {
@@ -37,6 +49,16 @@ export class Bot {
     }
 
     public listen(): Promise <string> {
+
+        this.client.on("guildMemberAdd", (member: GuildMember) => {
+            ColorConsole.PrintColoredReset(
+                    new ColorString('A new user joined with name:'),
+                    new ColorString(member.displayName)
+            );
+
+            console.log(member.guild.name);
+        });
+
 
         this.client.on('message', async (message: Message) => {
             for (let i = 0; i < this.commands.length; i++)
@@ -65,59 +87,9 @@ export class Bot {
             let channel: Channel = await this.client.channels.fetch(loadedMessage.channelID);
             let message: Message = await (<TextChannel>channel).messages.fetch(loadedMessage.latestMessageID);
 
-            if (message){
-                let isRoleEmote = (reaction: MessageReaction, user: User) => {
-                    let found: boolean = false;
-
-                    for (let i = 0; i < this.discordRoleManager.roleLength(); i++) {
-                        if (this.discordRoleManager.get(i).emote === reaction.emoji.name) {
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    return found;
-                }
-
-                let onNewReaction = async (reaction: MessageReaction, user: User) => {
-                    console.log("User " + user.username + " is reacting to " + reaction.emoji.name);
-
-                    let index: number = -1;
-                    for (let i = 0; i < this.discordRoleManager.roleLength(); i++) {
-                        if (reaction.emoji.name === this.discordRoleManager.get(i).emote) {
-                            index = i;
-                            break;
-                        }
-                    }
-
-                    if (index != -1) {
-                        let role: DiscordRole = this.discordRoleManager.get(index);
-                        await DiscordRoleManager.addUserToDiscordRole(user, role, message);
-                    }
-                };
-
-                let onRemoveReaction = async (reaction: MessageReaction, user: User) => {
-                    console.log("User " + user.username + " removed the reaction to " + reaction.emoji.name);
-
-                    let index: number = -1;
-                    for (let i = 0; i < this.discordRoleManager.roleLength(); i++) {
-                        if (reaction.emoji.name === this.discordRoleManager.get(i).emote) {
-                            index = i;
-                            break;
-                        }
-                    }
-
-                    if (index != -1) {
-                        let role: DiscordRole = this.discordRoleManager.get(index);
-                        await DiscordRoleManager.removeUserFromDiscordRole(user, role, message);
-                    }
-                };
-
-                console.log("Hooking back to message with ID: " + loadedMessage.latestMessageID);
-                const collector: ReactionCollector = message.createReactionCollector(isRoleEmote, {dispose: true});
-
-                collector.on("collect", await onNewReaction);
-                collector.on("remove", await onRemoveReaction);
+            if (message) {
+                let listener: StartCommandListener = StartCommandListener.getOrCreate();
+                await listener.listenToMessageReaction(message, this.discordRoleManager);
             } else {
                 console.log("Didn't find message in channel Bot.ts");
             }

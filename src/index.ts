@@ -1,5 +1,3 @@
-import DiscordRoleManager from "./DiscordRoleManager";
-
 require('dotenv').config(); // Recommended way of loading dotenv
 
 import container from "./injection/inversify.config";
@@ -8,9 +6,9 @@ import {Bot} from "./bot";
 
 let bot = container.get<Bot>(TYPES.Bot);
 
-bot.listen().then(() => {
+bot.listen().then(async () => {
     console.log('Logged in!')
-    bot.tryHookToLatestStartCommand();
+    await bot.tryHookToLatestStartCommand();
 }).catch((error) => {
     console.log('Oh no! ', error)
 });
