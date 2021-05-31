@@ -5,3 +5,4 @@ node_modules/
 .idea/
 discordRoles.json
 latestMessageID.json
+authorizedUsers.json

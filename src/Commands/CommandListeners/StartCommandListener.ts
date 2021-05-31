@@ -1,4 +1,4 @@
-import {Message, MessageReaction, ReactionCollector, Snowflake, User} from "discord.js";
+import {Message, MessageReaction, ReactionCollector, User} from "discord.js";
 import DiscordRole from "../../DiscordRole";
 import DiscordRoleManager from "../../DiscordRoleManager";
 import ColorConsole, {Color, ColorString} from "../Utilities/ColorConsole";

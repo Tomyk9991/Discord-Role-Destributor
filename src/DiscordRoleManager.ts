@@ -6,10 +6,12 @@ export default class DiscordRoleManager {
     private roles: DiscordRole[];
     private readonly filePath: string;
     private readonly latestMessageFilePath: string;
+    private readonly authorizedUsersPath: string;
 
-    constructor(filePath: string, latestMessageFilePath: string) {
+    constructor(filePath: string, latestMessageFilePath: string, authorizedUsersPath) {
         this.filePath = filePath;
         this.latestMessageFilePath = latestMessageFilePath;
+        this.authorizedUsersPath = authorizedUsersPath;
 
         this.roles = [];
         this.load();
@@ -98,6 +100,18 @@ export default class DiscordRoleManager {
 
         console.log("Didn't find latestMessageID");
         return null;
+    }
+
+    public loadAuthorizedUsers(): string[] {
+        const fs = require('fs');
+
+        if (fs.existsSync(this.authorizedUsersPath)) {
+
+            let rawData = fs.readFileSync(this.authorizedUsersPath);
+            return JSON.parse(rawData);
+        }
+
+        return [];
     }
 
     public load(): DiscordRole[] {

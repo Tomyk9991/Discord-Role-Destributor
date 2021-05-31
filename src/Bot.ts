@@ -1,14 +1,4 @@
-import {
-    BaseClient,
-    Channel,
-    Client,
-    GuildMember,
-    Message,
-    MessageReaction,
-    ReactionCollector,
-    TextChannel,
-    User
-} from "discord.js";
+import {Channel, Client, GuildMember, Message, TextChannel} from "discord.js";
 import {inject, injectable} from "inversify";
 import {TYPES} from "./injection/Types";
 import ConfigureCommand from "./Commands/ConfigureCommand";
@@ -21,16 +11,16 @@ import RemoveCommand from "./Commands/RemoveCommand";
 import UpdateRoleCommand from "./Commands/UpdateRoleCommand";
 import DiscordRoleManager from "./DiscordRoleManager";
 import {IIOMessage} from "./IIOMessage";
-import DiscordRole from "./DiscordRole";
 import StartCommandListener from "./Commands/CommandListeners/StartCommandListener";
-import ColorConsole, {Color, ColorString} from "./Commands/Utilities/ColorConsole";
+import ColorConsole, {ColorString} from "./Commands/Utilities/ColorConsole";
 
 @injectable()
 export class Bot {
     private readonly client: Client;
     private readonly token: string;
-    private commands: Command[];
-    private discordRoleManager: DiscordRoleManager;
+    private readonly commands: Command[];
+    private readonly discordRoleManager: DiscordRoleManager;
+    private authorizedUsers: string[] = [];
 
     constructor(@inject(TYPES.Client) client: Client, @inject(TYPES.Token) token: string, @inject(TYPES.DiscordRoleManager) discordRoleManager) {
         this.client = client;
@@ -46,6 +36,8 @@ export class Bot {
             new StartCommand(discordRoleManager),
             new UpdateRoleCommand(discordRoleManager)
         ];
+
+        this.authorizedUsers = this.discordRoleManager.loadAuthorizedUsers();
     }
 
     public listen(): Promise <string> {
@@ -61,6 +53,19 @@ export class Bot {
 
 
         this.client.on('message', async (message: Message) => {
+            let found: boolean = this.authorizedUsers.length == 0 ? true : false;
+
+            for (let i = 0; i < this.authorizedUsers.length; i++) {
+                if (message.author.id === this.authorizedUsers[i]) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                return;
+            }
+
             for (let i = 0; i < this.commands.length; i++)
             {
                 let command: Command = this.commands[i];

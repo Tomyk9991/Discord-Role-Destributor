@@ -19,6 +19,7 @@ export default class HelpCommand extends Command {
             {name: "Befehl 2:", value: "`" + Constants.prefix + "roles`", inline: false},
             {name: "Befehl 3:", value: "`" + Constants.prefix + "addRole \"Rust\"` " + rustEmote, inline: true},
             {name: "Befehl 4:", value: "`" + Constants.prefix + "removeRole \"Rust\"`", inline: true},
+            {name: "Befehl 4:", value: "`" + Constants.prefix + "updateRole \"Rust\"` " + rustEmote, inline: true},
             {name: "Befehl 5:", value: "`" + Constants.prefix + "start channelID`", inline: false}
         ));
     }

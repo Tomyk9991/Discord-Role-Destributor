@@ -1,5 +1,5 @@
 import Command from "./Command";
-import {Client, Message, EmbedFieldData} from "discord.js";
+import {Client, EmbedFieldData, Message} from "discord.js";
 import DiscordRole from "../DiscordRole";
 import DiscordRoleManager from "../DiscordRoleManager";
 

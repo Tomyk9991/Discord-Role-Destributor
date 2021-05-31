@@ -1,18 +1,9 @@
 import Command from "./Command";
-import {
-    Channel,
-    Client,
-    EmbedFieldData,
-    Message,
-    MessageEmbed,
-    MessageReaction,
-    ReactionCollector,
-    TextChannel,
-    User
-} from "discord.js";
+import {Channel, Client, EmbedFieldData, Message, MessageEmbed, MessageReaction, TextChannel} from "discord.js";
 import DiscordRoleManager from "../DiscordRoleManager";
 import DiscordRole from "../DiscordRole";
 import StartCommandListener from "./CommandListeners/StartCommandListener";
+import ColorConsole, {Color, ColorString} from "./Utilities/ColorConsole";
 
 export default class StartCommand extends Command {
     private channelID: string;
@@ -48,7 +39,7 @@ export default class StartCommand extends Command {
 
         let channel: Channel = client.channels.cache.get(this.channelID);
 
-        if (channel.isText()) {
+        if (channel && channel.isText()) {
             let sentMessage: Message = await (<TextChannel>channel).send(embed);
             //Speicher diese Message ID, damit sie wiedergefunden werden kann, falls der Bot abstürzen sollte
             this.discordRoleManager.saveLatestMessage(sentMessage);
@@ -56,6 +47,8 @@ export default class StartCommand extends Command {
             let sentReactions: MessageReaction[] = await this.addReactionsToMessage(sentMessage, client);
             let listener: StartCommandListener = StartCommandListener.getOrCreate();
             await listener.listenToMessageReaction(sentMessage, this.discordRoleManager);
+        } else {
+            ColorConsole.PrintColoredReset(new ColorString("Channel wurde nicht gefunden", Color.FgRed));
         }
     }
 

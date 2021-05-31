@@ -23,4 +23,24 @@ E.g. There is an existing role named "Minecraft" with the emote.
 
 Type `!addRole "Minecraft" :newEmote:`
 
-Alternatively you can use the command `!updateRole "Minecraft" :newEmote:` 
+Alternatively you can use the command `!updateRole "Minecraft" :newEmote:`
+
+
+# Install
+
+To host this bot you need to create two additional files in the root directory.
+
+## 1) .env
+
+Needs to contain two attributes
+ - ### `TOKEN=THISISMYDISCORDBOTTOKEN`
+ - ### `PREFIX=!`
+
+## 2) authorizedUsers.json
+A json string list containing all user id's, the bot will listen to.
+```json
+[
+    "123456790123456",
+    "987654332198765"
+]
+```
