@@ -49,6 +49,8 @@ export default class StartCommand extends Command {
 
         if (channel.isText()) {
             let sentMessage: Message = await (<TextChannel>channel).send(embed);
+            //Speicher diese Message ID, damit sie wiedergefunden werden kann, falls der Bot abstürzen sollte
+            this.discordRoleManager.saveLatestMessage(sentMessage);
 
             let sentReactions: MessageReaction[] = await this.addReactionsToMessage(sentMessage, client);
 

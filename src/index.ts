@@ -10,6 +10,7 @@ let bot = container.get<Bot>(TYPES.Bot);
 
 bot.listen().then(() => {
     console.log('Logged in!')
+    bot.tryHookToLatestStartCommand();
 }).catch((error) => {
     console.log('Oh no! ', error)
 });

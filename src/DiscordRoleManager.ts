@@ -1,12 +1,16 @@
 import DiscordRole from "./DiscordRole";
 import {GuildMember, Message, Role, User} from "discord.js";
+import {IIOMessage} from "./IIOMessage";
 
 export default class DiscordRoleManager {
     private roles: DiscordRole[];
     private readonly filePath: string;
+    private readonly latestMessageFilePath: string;
 
-    constructor(filePath: string) {
+    constructor(filePath: string, latestMessageFilePath: string) {
         this.filePath = filePath;
+        this.latestMessageFilePath = latestMessageFilePath;
+
         this.roles = [];
         this.load();
 
@@ -65,6 +69,35 @@ export default class DiscordRoleManager {
         let fs = require('fs');
         let data: string = JSON.stringify(this.roles);
         fs.writeFileSync(this.filePath, data);
+    }
+
+
+    public saveLatestMessage(message: Message): void {
+        let fs =require('fs');
+
+        let data: string = JSON.stringify({
+            latestMessageID: message.id,
+            channelID: message.channel.id
+        });
+
+        fs.writeFileSync(this.latestMessageFilePath, data);
+    }
+
+    public loadLatestMessageID(): IIOMessage {
+        const fs = require('fs');
+
+        if (fs.existsSync(this.latestMessageFilePath)) {
+            let rawData = fs.readFileSync(this.latestMessageFilePath);
+            let parsedData: any = JSON.parse(rawData);
+
+            return {
+                latestMessageID: parsedData.latestMessageID,
+                channelID: parsedData.channelID
+            };
+        }
+
+        console.log("Didn't find latestMessageID");
+        return null;
     }
 
     public load(): DiscordRole[] {
