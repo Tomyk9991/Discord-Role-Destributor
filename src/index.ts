@@ -2,7 +2,7 @@ require('dotenv').config(); // Recommended way of loading dotenv
 
 import container from "./injection/inversify.config";
 import {TYPES} from "./injection/Types";
-import {Bot} from "./bot";
+import {Bot} from "./Bot";
 
 let bot = container.get<Bot>(TYPES.Bot);
 

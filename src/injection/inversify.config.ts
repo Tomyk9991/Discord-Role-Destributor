@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import {Container} from "inversify";
-import {TYPES} from "./types";
+import {TYPES} from "./Types";
 import {Client} from "discord.js";
 import {Bot} from "../Bot";
 import DiscordRoleManager from "../DiscordRoleManager";

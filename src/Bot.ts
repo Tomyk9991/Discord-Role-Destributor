@@ -42,13 +42,15 @@ export class Bot {
 
     public listen(): Promise <string> {
 
-        this.client.on("guildMemberAdd", (member: GuildMember) => {
+        this.client.on("guildMemberAdd", async (member: GuildMember) => {
             ColorConsole.PrintColoredReset(
                     new ColorString('A new user joined with name:'),
                     new ColorString(member.displayName)
             );
 
             console.log(member.guild.name);
+
+            await member.send("Das ist eine private Nachricht von " + member.guild.name);
         });
 
 
