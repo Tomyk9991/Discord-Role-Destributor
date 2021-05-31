@@ -35,7 +35,8 @@ export default class StartCommand extends Command {
         }
 
         let embed: MessageEmbed = this.createStandardEmbedArray("Rollenverteilung", objs)
-                .setDescription("❗ Um einer Rolle hinzugefügt zu werden, wähle die passenden Reaktionen unterhalb dieser Nachricht aus ❗");
+                .setDescription("❗ Um einer Rolle hinzugefügt zu werden, wähle die passenden Reaktionen unterhalb dieser Nachricht aus ❗")
+                .setFooter('Bei Problemen an MrP3w wenden');
 
         let channel: Channel = client.channels.cache.get(this.channelID);
 
