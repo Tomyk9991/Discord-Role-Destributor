@@ -12,6 +12,6 @@ container.bind<DiscordRoleManager>(TYPES.DiscordRoleManager).toConstantValue(new
 container.bind<Bot>(TYPES.Bot).to(Bot).inSingletonScope();
 container.bind<Client>(TYPES.Client).toConstantValue(new Client());
 container.bind<string>(TYPES.Token).toConstantValue(process.env.TOKEN);
-Constants.prefix = process.env.TOKEN;
+Constants.prefix = process.env.PREFIX;
 
 export default container;

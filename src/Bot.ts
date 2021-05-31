@@ -13,6 +13,7 @@ import DiscordRoleManager from "./DiscordRoleManager";
 import {IIOMessage} from "./IIOMessage";
 import StartCommandListener from "./Commands/CommandListeners/StartCommandListener";
 import ColorConsole, {ColorString} from "./Commands/Utilities/ColorConsole";
+import {Constants} from "./Constants";
 
 @injectable()
 export class Bot {
@@ -55,10 +56,12 @@ export class Bot {
 
 
         this.client.on('message', async (message: Message) => {
+            console.log(Constants.prefix);
+
             let found: boolean = this.authorizedUsers.length == 0 ? true : false;
 
             for (let i = 0; i < this.authorizedUsers.length; i++) {
-                if (message.author.id === this.authorizedUsers[i]) {
+                if (message.author.id == this.authorizedUsers[i]) {
                     found = true;
                     break;
                 }
