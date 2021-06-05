@@ -13,7 +13,6 @@ import DiscordRoleManager from "./DiscordRoleManager";
 import {IIOMessage} from "./IIOMessage";
 import StartCommandListener from "./Commands/CommandListeners/StartCommandListener";
 import ColorConsole, {ColorString} from "./Commands/Utilities/ColorConsole";
-import {Constants} from "./Constants";
 
 @injectable()
 export class Bot {
@@ -41,7 +40,7 @@ export class Bot {
         this.authorizedUsers = this.discordRoleManager.loadAuthorizedUsers();
     }
 
-    public listen(): Promise <string> {
+    public listen(): Promise<string> {
 
         this.client.on("guildMemberAdd", async (member: GuildMember) => {
             ColorConsole.PrintColoredReset(
@@ -49,15 +48,21 @@ export class Bot {
                     new ColorString(member.displayName)
             );
 
-            console.log(member.guild.name);
 
-            await member.send("Das ist eine private Nachricht von " + member.guild.name);
+            // let message: string = "Hey " + member.displayName + ",\n" +
+            //         "du bist kürzlich auf unserem Server, " + member.guild.name + " beigetreten. Um nur Nachrichten " +
+            //         "von deinen favorisierten Spielen " +
+            //         "zu erhalten, musst du im Channel \"Rollenverteilung\" die jeweiligen Reaktionen hinzufügen.\n\n" +
+            //         "Sagen wir, du interessierst dich für Rust und Battlefield. Dafür klickst du auf die jeweiligen Emojis " +
+            //         "und dir werden die Textchannel nach deinem Interesse angezeigt. Natürlich kannst du die Channel durch " +
+            //         "ein erneutes Auswählen wieder entfernen. \n\n";
+            //
+            //
+            // await member.send(message);
         });
 
 
         this.client.on('message', async (message: Message) => {
-            console.log(Constants.prefix);
-
             let found: boolean = this.authorizedUsers.length == 0 ? true : false;
 
             for (let i = 0; i < this.authorizedUsers.length; i++) {
@@ -71,11 +76,9 @@ export class Bot {
                 return;
             }
 
-            for (let i = 0; i < this.commands.length; i++)
-            {
+            for (let i = 0; i < this.commands.length; i++) {
                 let command: Command = this.commands[i];
-                if (command.matches(message.content))
-                {
+                if (command.matches(message.content)) {
                     if (command.hasChangesToDo()) {
                         command.do(message.content);
                     }
@@ -89,7 +92,7 @@ export class Bot {
     }
 
 
-    public async tryHookToLatestStartCommand() :Promise<void> {
+    public async tryHookToLatestStartCommand(): Promise<void> {
         let loadedMessage: IIOMessage = this.discordRoleManager.loadLatestMessageID();
 
 
@@ -101,7 +104,7 @@ export class Bot {
                 let listener: StartCommandListener = StartCommandListener.getOrCreate();
                 await listener.listenToMessageReaction(message, this.discordRoleManager);
             } else {
-                console.log("Didn't find message in channel Bot.ts");
+                console.log("Didn't find message in channel Bot::tryHookToLatestStartCommand.ts");
             }
         }
     }
