@@ -1,12 +1,24 @@
 import Command from "./Command";
-import {Client, EmbedFieldData, Message} from "discord.js";
+import {Client, EmbedFieldData, Message, MessageEmbed} from "discord.js";
 import DiscordRole from "../DiscordRole";
 import DiscordRoleManager from "../DiscordRoleManager";
+import IRerenderHookedMessage from "./IRerenderHookedMessage";
 
-export default class UpdateRoleCommand extends Command {
+export default class UpdateRoleCommand extends Command implements IRerenderHookedMessage {
     private updateSuccess: boolean = true;
     constructor(private discordRoleManager: DiscordRoleManager) {
         super("updateRole");
+    }
+
+    async OnRerenderHookedMessage(client: Client, hookedMessage: Message): Promise<void> {
+        if (hookedMessage == null) return;
+
+        console.log("Updating role to already existing message with id: " + hookedMessage.id);
+
+        let objs: EmbedFieldData[] = [];
+        let embed: MessageEmbed = this.createRoleDistributionInterface(client, this.discordRoleManager);
+
+        await hookedMessage.edit(embed);
     }
 
     do(value: string): void {

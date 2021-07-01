@@ -1,5 +1,7 @@
 import {Constants} from "../Constants";
 import {Client, EmbedFieldData, Message, MessageEmbed} from "discord.js";
+import DiscordRole from "../DiscordRole";
+import DiscordRoleManager from "../DiscordRoleManager";
 
 export default abstract class Command {
     protected command: string;
@@ -29,6 +31,23 @@ export default abstract class Command {
                 .addFields(lines)
                 .setTimestamp()
                 .setFooter('Bei Problemen an Tomyk#1337 wenden', 'https://i.imgur.com/qxhUKkj.png');
+
+        return embed;
+    }
+
+    protected createRoleDistributionInterface(client: Client, discordRoleManager: DiscordRoleManager) {
+        let objs: EmbedFieldData[] = [];
+
+        for (let i = 0; i < discordRoleManager.roleLength(); i++) {
+            let role: DiscordRole = discordRoleManager.get(i);
+            let emote: string = (client.emojis.valueOf().find(emote => emote.name === role.emote)).toString();
+
+            objs.push({name: (i + 1).toString(), value: role.name + " mit dem Emote: " + emote, inline: false});
+        }
+
+        let embed: MessageEmbed = this.createStandardEmbedArray("Rollenverteilung", objs)
+                .setDescription("❗ Um einer Rolle hinzugefügt zu werden, wähle die passenden Reaktionen unterhalb dieser Nachricht aus ❗")
+                .setFooter('Bei Problemen an MrP3w wenden');
 
         return embed;
     }

@@ -4,9 +4,13 @@ import DiscordRoleManager from "../../DiscordRoleManager";
 import ColorConsole, {Color, ColorString} from "../Utilities/ColorConsole";
 
 export default class StartCommandListener {
+    get currentHookedMessage(): Message {
+        return this._currentHookedMessage;
+    }
 
     private static instance: StartCommandListener;
     private collector: ReactionCollector;
+    private _currentHookedMessage: Message;
 
     public static getOrCreate() : StartCommandListener {
         if (StartCommandListener.instance == null) {
@@ -30,6 +34,7 @@ export default class StartCommandListener {
 
     public async listenToMessageReaction(sentMessage: Message, discordRoleManager: DiscordRoleManager): Promise<void>
     {
+        this._currentHookedMessage = sentMessage;
         let isRoleEmote = (reaction: MessageReaction, user: User) => {
             let found: boolean = false;
 
@@ -44,6 +49,8 @@ export default class StartCommandListener {
         }
 
         let onNewReaction = async (reaction: MessageReaction, user: User) => {
+            if (user.bot) return;
+
             ColorConsole.PrintColoredReset(
                     new ColorString("User"),
                     new ColorString(user.username, Color.FgGreen),
@@ -66,6 +73,8 @@ export default class StartCommandListener {
         };
 
         let onRemoveReaction = async (reaction: MessageReaction, user: User) => {
+            if (user.bot) return;
+
             ColorConsole.PrintColoredReset(
                     new ColorString("User"),
                     new ColorString(user.username, Color.FgRed),

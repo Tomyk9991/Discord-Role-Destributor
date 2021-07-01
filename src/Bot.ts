@@ -13,6 +13,7 @@ import DiscordRoleManager from "./DiscordRoleManager";
 import {IIOMessage} from "./IIOMessage";
 import StartCommandListener from "./Commands/CommandListeners/StartCommandListener";
 import ColorConsole, {ColorString} from "./Commands/Utilities/ColorConsole";
+import IRerenderHookedMessage from "./Commands/IRerenderHookedMessage";
 
 @injectable()
 export class Bot {
@@ -47,18 +48,6 @@ export class Bot {
                     new ColorString('A new user joined with name:'),
                     new ColorString(member.displayName)
             );
-
-
-            // let message: string = "Hey " + member.displayName + ",\n" +
-            //         "du bist kürzlich auf unserem Server, " + member.guild.name + " beigetreten. Um nur Nachrichten " +
-            //         "von deinen favorisierten Spielen " +
-            //         "zu erhalten, musst du im Channel \"Rollenverteilung\" die jeweiligen Reaktionen hinzufügen.\n\n" +
-            //         "Sagen wir, du interessierst dich für Rust und Battlefield. Dafür klickst du auf die jeweiligen Emojis " +
-            //         "und dir werden die Textchannel nach deinem Interesse angezeigt. Natürlich kannst du die Channel durch " +
-            //         "ein erneutes Auswählen wieder entfernen. \n\n";
-            //
-            //
-            // await member.send(message);
         });
 
 
@@ -83,7 +72,14 @@ export class Bot {
                         command.do(message.content);
                     }
 
-                    await this.commands[i].respond(this.client, message);
+                    // Wenn es als RerenderHookedMessage castbar ist, dann führe Code dazu aus
+                    let rerenderTarget: IRerenderHookedMessage = (command as unknown) as IRerenderHookedMessage;
+                    let hookedMessage: Message = StartCommandListener.getOrCreate().currentHookedMessage;
+
+                    if (rerenderTarget.OnRerenderHookedMessage && hookedMessage)
+                        await rerenderTarget.OnRerenderHookedMessage(this.client, hookedMessage);
+                    else
+                        await this.commands[i].respond(this.client, message);
                 }
             }
         });
