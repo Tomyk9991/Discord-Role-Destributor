@@ -42,7 +42,6 @@ export class Bot {
     }
 
     public listen(): Promise<string> {
-
         this.client.on("guildMemberAdd", async (member: GuildMember) => {
             ColorConsole.PrintColoredReset(
                     new ColorString('A new user joined with name:'),

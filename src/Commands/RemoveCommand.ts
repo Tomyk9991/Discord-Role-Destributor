@@ -46,28 +46,24 @@ export default class RemoveCommand extends Command implements IRerenderHookedMes
     }
 
     public async respond(client: Client, message: Message): Promise<void> {
-        let objs: EmbedFieldData[] = [];
-        for (let i = 0; i < this.discordRoleManager.roleLength(); i++)
-        {
-            let role: DiscordRole = this.discordRoleManager.get(i);
-            let emote: string = (client.emojis.valueOf().find(emote => emote.name === role.emote)).toString();
-
-            objs.push({name: (i + 1).toString(), value: "`" + role.name + " with emote:` " + emote, inline: false});
-        }
-
+        let objs: EmbedFieldData[] = this.createEmbedFieldData(client, this.discordRoleManager);
         await message.channel.send(this.createStandardEmbedArray("Rollen, nach der Entfernung:", objs));
     }
 
+    // IRerenderHookedMessage
     async OnRerenderHookedMessage(client: Client, hookedMessage: Message): Promise<void> {
         if (hookedMessage == null) return;
 
-        console.log("Removing role from already existing message with id: " + hookedMessage.id);
+        ColorConsole.PrintColoredReset(
+                new ColorString("Removing role from existing message:"),
+                new ColorString(hookedMessage.id, Color.FgYellow)
+        );
         let embed: MessageEmbed = this.createRoleDistributionInterface(client, this.discordRoleManager);
 
         await hookedMessage.edit(embed);
         let reactionToRemove: MessageReaction = this.filterReactionToRemove(hookedMessage);
 
-        await this.removeReaction(hookedMessage, reactionToRemove, this.discordRoleManager);
+        await this.removeReaction(hookedMessage, reactionToRemove);
     }
 
     private filterReactionToRemove(hookedMessage: Message): MessageReaction {
@@ -104,33 +100,30 @@ export default class RemoveCommand extends Command implements IRerenderHookedMes
         return reactionToRemove;
     }
 
-    private async removeReaction(target: Message, reactionToRemove: MessageReaction, discordRoleManager: DiscordRoleManager): Promise<void> {
-        // Foreach user, who's currently reacting with this reaction. Remove him from this role
-
-        // let users: User[] = reactionToRemove.users.valueOf().array();
-
+    private async removeReaction(target: Message, reactionToRemove: MessageReaction): Promise<void> {
         let temp: Collection<string, User> = await reactionToRemove.users.fetch();
+
+        let usersToRemove: Promise<void>[] = [];
 
         for (let user of temp.values()) {
             user = user as User;
 
             if (user.bot) continue;
 
-
-            if (this.lastRemovedDiscordRole)
-            {
+            if (this.lastRemovedDiscordRole) {
                 ColorConsole.PrintColoredReset(
-                        new ColorString("Removing user"),
-                        new ColorString(user.username, Color.FgRed),
-                        new ColorString("from"),
-                        new ColorString(this.lastRemovedDiscordRole.name, Color.FgRed),
+                    new ColorString("Removing user"),
+                    new ColorString(user.username, Color.FgRed),
+                    new ColorString("from"),
+                    new ColorString(this.lastRemovedDiscordRole.name, Color.FgRed),
                 );
 
-                    await DiscordRoleManager.removeUserFromDiscordRole(user, this.lastRemovedDiscordRole, target);
+                usersToRemove.push(DiscordRoleManager.removeUserFromDiscordRole(user, this.lastRemovedDiscordRole, target));
             }
 
         }
 
+        await Promise.all(usersToRemove);
         await reactionToRemove.remove();
     }
 

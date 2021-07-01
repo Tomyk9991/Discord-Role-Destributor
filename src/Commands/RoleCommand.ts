@@ -1,6 +1,5 @@
 import Command from "./Command";
 import {Client, EmbedFieldData, Message} from "discord.js";
-import DiscordRole from "../DiscordRole";
 import DiscordRoleManager from "../DiscordRoleManager";
 
 export default class RoleCommand extends Command {
@@ -23,15 +22,7 @@ export default class RoleCommand extends Command {
     }
 
     public async respond(client: Client, message: Message): Promise<void> {
-        let objs: EmbedFieldData[] = [];
-
-        for (let i = 0; i < this.discordRoleManager.roleLength(); i++)
-        {
-            let role: DiscordRole = this.discordRoleManager.get(i);
-            let emote: string = (client.emojis.valueOf().find(emote => emote.name === role.emote)).toString();
-
-            objs.push({name: (i + 1).toString(), value: "`" + role.name + " with emote:` " + emote, inline: false});
-        }
+        let objs: EmbedFieldData[] = this.createEmbedFieldData(client, this.discordRoleManager);
         await message.channel.send(this.createStandardEmbedArray("Bisherige Rollen:", objs));
     }
 

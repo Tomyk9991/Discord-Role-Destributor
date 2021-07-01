@@ -1,5 +1,5 @@
 import Command from "./Command";
-import {Channel, Client, EmbedFieldData, Message, MessageEmbed, MessageReaction, TextChannel} from "discord.js";
+import {Channel, Client, Message, MessageEmbed, MessageReaction, TextChannel} from "discord.js";
 import DiscordRoleManager from "../DiscordRoleManager";
 import DiscordRole from "../DiscordRole";
 import StartCommandListener from "./CommandListeners/StartCommandListener";
@@ -26,23 +26,12 @@ export default class StartCommand extends Command {
     }
 
     public async respond(client: Client, message: Message): Promise<void> {
-        let objs: EmbedFieldData[] = [];
-        for (let i = 0; i < this.discordRoleManager.roleLength(); i++) {
-            let role: DiscordRole = this.discordRoleManager.get(i);
-            let emote: string = (client.emojis.valueOf().find(emote => emote.name === role.emote)).toString();
-
-            objs.push({name: (i + 1).toString(), value: role.name + " with emote: " + emote, inline: false});
-        }
-
-        let embed: MessageEmbed = this.createStandardEmbedArray("Rollenverteilung", objs)
-                .setDescription("❗ Um einer Rolle hinzugefügt zu werden, wähle die passenden Reaktionen unterhalb dieser Nachricht aus ❗")
-                .setFooter('Bei Problemen an MrP3w wenden');
-
+        let embed: MessageEmbed = this.createRoleDistributionInterface(client, this.discordRoleManager);
         let channel: Channel = client.channels.cache.get(this.channelID);
 
         if (channel && channel.isText()) {
             let sentMessage: Message = await (<TextChannel>channel).send(embed);
-            //Speicher diese Message ID, damit sie wiedergefunden werden kann, falls der Bot abstürzen sollte
+            //Speicher diese Message ID, damit sie wiedergefunden werden kann, falls der Bot abstürtzen sollte
             this.discordRoleManager.saveLatestMessage(sentMessage);
 
             let sentReactions: MessageReaction[] = await this.addReactionsToMessage(sentMessage, client);

@@ -19,14 +19,7 @@ export default class AddRoleCommand extends Command implements ILatestMessageCha
     }
 
     public async respond(client: Client, message: Message): Promise<void> {
-        let objs: EmbedFieldData[] = [];
-        for (let i = 0; i < this.discordRoleManager.roleLength(); i++)
-        {
-            let role: DiscordRole = this.discordRoleManager.get(i);
-            let emote: string = (client.emojis.valueOf().find(emote => emote.name === role.emote)).toString();
-
-            objs.push({name: (i + 1).toString(), value: "`" + role.name + " with emote:` " + emote, inline: false});
-        }
+        let objs: EmbedFieldData[] = this.createEmbedFieldData(client, this.discordRoleManager);
         await message.channel.send(this.createStandardEmbedArray("Bisherige Rollen:", objs));
     }
 
@@ -65,9 +58,10 @@ export default class AddRoleCommand extends Command implements ILatestMessageCha
     async OnRerenderHookedMessage(client: Client, hookedMessage: Message): Promise<void> {
         if (hookedMessage == null) return;
 
-        console.log("Adding role to already existing message with id: " + hookedMessage.id);
-
-        let objs: EmbedFieldData[] = [];
+        ColorConsole.PrintColoredReset(
+                new ColorString("Adding role to existing message:"),
+                new ColorString(hookedMessage.id, Color.FgYellow)
+        );
 
         let embed: MessageEmbed = this.createRoleDistributionInterface(client, this.discordRoleManager);
 

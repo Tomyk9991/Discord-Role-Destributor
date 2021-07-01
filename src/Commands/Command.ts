@@ -24,6 +24,20 @@ export default abstract class Command {
         return value.substring(1, value.length);
     }
 
+    protected createEmbedFieldData(client: Client, discordRoleManager: DiscordRoleManager):  EmbedFieldData[] {
+        let embedFieldData: EmbedFieldData[] = [];
+        for (let i = 0; i < discordRoleManager.roleLength(); i++)
+        {
+            let role: DiscordRole = discordRoleManager.get(i);
+            let emote: string = (client.emojis.valueOf().find(emote => emote.name === role.emote)).toString();
+
+            embedFieldData.push({name: (i + 1).toString(), value: "`" + role.name + " mit dem Emote:` " + emote, inline: false});
+        }
+
+        return embedFieldData;
+    }
+
+
     protected createStandardEmbedArray(title: string, lines: EmbedFieldData[]): MessageEmbed {
         const embed: MessageEmbed = new MessageEmbed()
                 .setColor('#0099ff')

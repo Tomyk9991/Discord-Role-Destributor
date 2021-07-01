@@ -1,4 +1,4 @@
-require('dotenv').config(); // Recommended way of loading dotenv
+require('dotenv').config();
 
 import container from "./injection/inversify.config";
 import {TYPES} from "./injection/Types";
