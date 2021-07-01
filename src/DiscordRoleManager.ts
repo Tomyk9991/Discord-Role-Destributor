@@ -51,7 +51,8 @@ export default class DiscordRoleManager {
         this.save();
     }
 
-    public remove(roleName: string): void {
+    public remove(roleName: string): DiscordRole {
+        let deletedDiscordRole: DiscordRole = null;
         let index: number = -1;
 
         for (let i = 0; i < this.roles.length; i++) {
@@ -62,9 +63,11 @@ export default class DiscordRoleManager {
         }
 
         if (index > -1) {
-            this.roles.splice(index, 1);
+            deletedDiscordRole = this.roles.splice(index, 1)[0];
             this.save();
         }
+
+        return deletedDiscordRole;
     }
 
     public save(): void {

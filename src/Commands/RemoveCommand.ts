@@ -1,11 +1,22 @@
 import Command from "./Command";
-import {Client, EmbedFieldData, Message, MessageEmbed, MessageMentionOptions, MessageReaction} from "discord.js";
+import {
+    Client,
+    Collection,
+    EmbedFieldData,
+    Message,
+    MessageEmbed,
+    MessageMentionOptions,
+    MessageReaction,
+    User
+} from "discord.js";
 import DiscordRoleManager from "../DiscordRoleManager";
 import DiscordRole from "../DiscordRole";
 import IRerenderHookedMessage from "./IRerenderHookedMessage";
 import ColorConsole, {Color, ColorString} from "./Utilities/ColorConsole";
 
 export default class RemoveCommand extends Command implements IRerenderHookedMessage {
+    private lastRemovedDiscordRole: DiscordRole;
+
     public constructor(private readonly discordRoleManager: DiscordRoleManager) {
         super("removeRole");
     }
@@ -21,7 +32,7 @@ export default class RemoveCommand extends Command implements IRerenderHookedMes
             if (!roleName.startsWith("\"")) roleName = "\"" + roleName;
             if (!roleName.endsWith("\"")) roleName = roleName + "\"";
 
-            this.discordRoleManager.remove(roleName);
+            this.lastRemovedDiscordRole = this.discordRoleManager.remove(roleName);
             this.discordRoleManager.printRoles();
         }
     }
@@ -56,7 +67,7 @@ export default class RemoveCommand extends Command implements IRerenderHookedMes
         await hookedMessage.edit(embed);
         let reactionToRemove: MessageReaction = this.filterReactionToRemove(hookedMessage);
 
-        await this.removeReaction(hookedMessage, reactionToRemove, client);
+        await this.removeReaction(hookedMessage, reactionToRemove, this.discordRoleManager);
     }
 
     private filterReactionToRemove(hookedMessage: Message): MessageReaction {
@@ -93,11 +104,34 @@ export default class RemoveCommand extends Command implements IRerenderHookedMes
         return reactionToRemove;
     }
 
-    private async removeReaction(target: Message, reactionToRemove, client: Client): Promise<void> {
+    private async removeReaction(target: Message, reactionToRemove: MessageReaction, discordRoleManager: DiscordRoleManager): Promise<void> {
+        // Foreach user, who's currently reacting with this reaction. Remove him from this role
 
-        await target.reactions.valueOf().filter((mr: MessageReaction) => {
-            return mr === reactionToRemove;
-        }).first().remove();
+        // let users: User[] = reactionToRemove.users.valueOf().array();
+
+        let temp: Collection<string, User> = await reactionToRemove.users.fetch();
+
+        for (let user of temp.values()) {
+            user = user as User;
+
+            if (user.bot) continue;
+
+
+            if (this.lastRemovedDiscordRole)
+            {
+                ColorConsole.PrintColoredReset(
+                        new ColorString("Removing user"),
+                        new ColorString(user.username, Color.FgRed),
+                        new ColorString("from"),
+                        new ColorString(this.lastRemovedDiscordRole.name, Color.FgRed),
+                );
+
+                    await DiscordRoleManager.removeUserFromDiscordRole(user, this.lastRemovedDiscordRole, target);
+            }
+
+        }
+
+        await reactionToRemove.remove();
     }
 
 

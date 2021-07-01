@@ -4,6 +4,7 @@ import DiscordRole from "../DiscordRole";
 import DiscordRoleManager from "../DiscordRoleManager";
 import ILatestMessageChangeable from "./IRerenderHookedMessage";
 import StartCommandListener from "./CommandListeners/StartCommandListener";
+import ColorConsole, {Color, ColorString} from "./Utilities/ColorConsole";
 
 export default class AddRoleCommand extends Command implements ILatestMessageChangeable {
     private readonly discordRoleManager: DiscordRoleManager;
@@ -48,6 +49,8 @@ export default class AddRoleCommand extends Command implements ILatestMessageCha
                 roleName = roleName + "\"";
 
             this.discordRoleManager.add(new DiscordRole(roleName, roleEmote));
+        } else {
+            ColorConsole.PrintColoredReset(new ColorString("EXPECTED EMOTE", Color.FgRed));
         }
     }
 
@@ -55,7 +58,7 @@ export default class AddRoleCommand extends Command implements ILatestMessageCha
         let correctedValue: string = value.replace(/\s+/g, ' ');
         let parts: string[] = correctedValue.split("\"");
 
-        return parts.length == 3 && this.withoutPrefix(parts[0]).toLowerCase().startsWith(this.command);
+        return parts.length == 3 && this.withoutPrefix(parts[0]).toLowerCase().startsWith(this.command) && parts[2].trim().length > 0;
     }
 
     // IRerenderHookedMessage
